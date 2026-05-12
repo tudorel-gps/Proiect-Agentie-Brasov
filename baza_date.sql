@@ -1,28 +1,30 @@
-/*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19-11.8.6-MariaDB, for Linux (x86_64)
---
--- Host: localhost    Database: agentiebrasov
--- ------------------------------------------------------
--- Server version	11.8.6-MariaDB
+-- Creează baza de date dacă nu există
+CREATE DATABASE IF NOT EXISTS `agentiebrasov` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `agentiebrasov`;
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+-- Tabelul pentru destinații (Trebuie creat primul)
+CREATE TABLE IF NOT EXISTS `destinatii` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nume` varchar(255) NOT NULL,
+  `imagine` varchar(255) NOT NULL,
+  `pret_bilet` decimal(10,2) NOT NULL,
+  `timp_vizitare` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
+-- Tabelul pentru rezervări
+CREATE TABLE IF NOT EXISTS `programare` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nume_vizitator` varchar(255) NOT NULL,
+  `email_vizitator` varchar(255) NOT NULL,
+  `destinatie_id` int(11) NOT NULL,
+  `data_planificata` date NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_destinatie` FOREIGN KEY (`destinatie_id`) REFERENCES `destinatii` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dump completed on 2026-05-12  7:28:35
+-- Inserăm niște date de probă ca să nu fie site-ul gol
+INSERT INTO `destinatii` (`nume`, `imagine`, `pret_bilet`, `timp_vizitare`) VALUES
+('Piata Sfatului', 'piata.jpg', 0.00, '24/7'),
+('Castelul Bran', 'bran.jpg', 60.00, '09:00 - 18:00'),
+('Biserica Neagra', 'biserica.jpg', 20.00, '10:00 - 19:00');
