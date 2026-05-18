@@ -1,49 +1,42 @@
 <?php
 $conn = mysqli_connect("localhost", "root", "", "agentieturisticabrasov");
-mysqli_set_charset($conn, "utf8mb4");
-
-$sql = "SELECT * FROM destinatii";
-$rezultat = mysqli_query($conn, $sql);
+if (!$conn) {
+    die("Conexiune esuata: " . mysqli_connect_error());
+}
+$result = mysqli_query($conn, "SELECT * FROM destinatii");
 ?>
-
 <!DOCTYPE html>
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <title>Agenție Turism Brașov</title>
+    <title>Atestat Turism Brașov</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; text-align: center; }
-        .header { background: #2c3e50; color: white; padding: 20px; margin-bottom: 30px; }
-        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
-        .card { background: white; border-radius: 12px; width: 280px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.3s; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
+        .header { background: #2c3e50; color: white; text-align: center; padding: 20px; border-radius: 8px; }
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 20px auto; }
+        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; text-decoration: none; color: inherit; }
         .card:hover { transform: translateY(-5px); }
-        .card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; }
-        .card-content { padding: 15px; }
-        .btn { display: inline-block; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px; }
-        h3 { margin: 10px 0; color: #2c3e50; }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-content { padding: 15px; text-align: center; }
+        .price { color: #27ae60; font-weight: bold; font-size: 1.2em; }
     </style>
 </head>
 <body>
-
-<div class="header">
-    <h1>Descoperă Brașovul</h1>
-    <p>Alege destinația preferată pentru a vedea detaliile</p>
-</div>
-
-<div class="container">
-    <?php while($row = mysqli_fetch_assoc($rezultat)): ?>
-        <div class="card">
-            <a href="detalii.php?id=<?php echo $row['id']; ?>">
-                <img src="<?php echo $row['imagine']; ?>" alt="<?php echo $row['nume']; ?>">
-            </a>
+    <div class="header"><h1>Destinații Turistice Brașov</h1></div>
+    <div class="container">
+        <?php while($row = mysqli_fetch_assoc($result)): 
+            // Verificam daca numele imaginii are deja .jpg, daca nu, adaugam
+            $nume_img = $row['imagine'];
+            if (!str_contains($nume_img, '.')) { $nume_img .= ".jpg"; }
+        ?>
+        <a href="detalii.php?id=<?php echo $row['id']; ?>" class="card">
+            <img src="<?php echo $nume_img; ?>" onerror="this.src='https://via.placeholder.com/300x200?text=Fara+Imagine'">
             <div class="card-content">
-                <h3><?php echo $row['nume']; ?></h3>
-                <p><strong>Preț:</strong> <?php echo $row['pret_bilet']; ?> RON</p>
-                <a href="detalii.php?id=<?php echo $row['id']; ?>" class="btn">Vezi Detalii</a>
+                <h3><?php echo htmlspecialchars($row['nume']); ?></h3>
+                <p class="price"><?php echo $row['pret_bilet']; ?> RON</p>
             </div>
-        </div>
-    <?php endwhile; ?>
-</div>
-
+        </a>
+        <?php endwhile; ?>
+    </div>
 </body>
 </html>
